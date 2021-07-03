@@ -1,0 +1,62 @@
+from django.shortcuts import render, redirect
+import requests
+from .models import City
+from .forms import CityForm
+
+
+# Create your views here.
+
+
+def index(request):
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=7b7375507ebfdc061b87633fd264fc74'
+    if request.method == 'POST':
+        form = CityForm(request.POST)
+
+        if form.is_valid():
+            new_city = form.cleaned_data['name']
+            r = requests.get(url.format(new_city)).json()
+
+            if r['cod'] == 200:
+                form.save()
+            else:
+                print('City does not exist')
+
+    form = CityForm()
+
+    cities = City.objects.all()
+    weather_data = []
+    for city in cities:
+        r = requests.get(url.format(city)).json()
+
+        city_weather = {
+            'country' : r['sys']['country'] ,
+            'city': city.name,
+            'temperature': r['main']['temp'],
+            'humidity' : r['main']['temp'],
+            'description': r['weather'][0]['description'],
+            'icon': r['weather'][0]['icon'],
+        }
+        weather_data.append(city_weather)
+
+    arr = len(weather_data)
+    if len(weather_data) == 0:
+        print('Empty array printing default value..')
+        city = 'New Delhi'
+        r = requests.get(url.format(city)).json()
+
+        weather_data = {
+            'country': r['sys']['country'],
+            'city': city,
+            'temperature': r['main']['temp'],
+            'humidity' : r['main']['humidity'],
+            'description': r['weather'][0]['description'],
+            'icon': r['weather'][0]['icon'],
+
+        }
+    else:
+        weather_data = weather_data[arr - 1]
+
+    print(weather_data)
+    context = {'weather_data': weather_data, 'form': form}
+    return render(request, 'home.html', context)
+

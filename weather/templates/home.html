@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>weather</title>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  <!-- Latest compiled JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <style>
+        body {
+	background-color: #393939;
+}
+#messages {
+    color:white;
+    background-color:#C84B31;
+    padding:10px;
+    width:20%;
+    margin:15px auto auto auto;
+    }
+
+#heading {
+	font-family: oswald;
+}
+hr {
+	border-color: #393939 !important;
+}
+
+img {
+	max-height: 300px;
+}
+
+.jumbotron {
+	background-color: #FC7753;
+}
+
+.vertical-center {
+		min-height: 100%;
+		max-width:70%;
+		margin-top: 50px;
+		min-height: 60vh;
+		/* align-items: center; */
+		justify-content: center;
+		flex-direction: column;
+}
+    </style>
+</head>
+
+<body>
+  <nav class="row" style="background: #4ca1a3; color: white;">
+    <h1 class="col-md-3 text-center">Weather App</h1>
+  </nav>
+  <br />
+  <br />
+  <center class="row">
+    <form method="post" class="col-md-6 col-md-offset-3">
+      {% csrf_token %}
+      <div class="input-group" style="max-width:30rem;">
+          <input type="text" class="form-control" name="city">
+        <div class="input-group-btn">
+          <button class="btn btn-primary" type="submit">
+            <i class="glyphicon glyphicon-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+
+  </center>
+  <div class="text-center" >
+            {% for message in messages %}
+            <h3 id="messages">{{message}}</h3>
+            {% endfor %}
+        </div>
+
+
+  {% if weather_data %}
+  <div class="container vertical-center">
+	<div class="jumbotron">
+		<h2 class="text-center" id="heading">Weather Details</h2>
+		<hr>
+
+		<div class="row">
+			<div class="col-md-6">
+				<h3 class="city-name text-center">City : {{weather_data.city | title}}, {{weather_data.country | title}}
+                  <img src = "http://openweathermap.org/img/w/{{weather_data.icon}}.png" alt="img"></h3>
+			</div>
+			<div class="col-md-6">
+				<h3 class="current-temp text-center"> Description : {{weather_data.description | title}}</h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<h3 class="weather-msg text-center">Humidity : {{weather_data.humidity}}</h3>
+			</div>
+			<div class="col-md-3">
+				<h3 class="temp-min text-center" id="temp-min">Min : {{weather_data.min_temp | title}}</h3>
+			</div>
+			<div class="col-md-3">
+				<h3 class="temp-max text-center">Max : {{weather_data.max_temp | title}}</h3>
+			</div>
+		</div>
+		<hr>
+	</div>
+</div>
+{% endif %}
+
+
+
+</body>
+
+</html>
